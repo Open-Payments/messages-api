@@ -1,0 +1,8 @@
+services:
+  validator-service:
+    image: harishankarn/open-payments-validator-service
+    build: .
+    container_name: validator-service
+    ports:
+      - "8080:8080" # Expose port 8080 from the container to the host
+    restart: always  # Automatically restart the container if it crashes
