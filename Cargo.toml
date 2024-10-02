@@ -1,6 +1,6 @@
 [package]
-name = "validator-service"
-version = "0.1.5"
+name = "messages-api"
+version = "0.1.7"
 edition = "2021"
 
 [dependencies]
