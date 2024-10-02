@@ -1,4 +1,4 @@
-name: Build, Publish Docker Image to Docker Hub and GCP, and Tag Version
+name: Build, Publish Docker Image, and Tag Version
 
 on:
   push:
@@ -18,11 +18,31 @@ jobs:
       with:
         toolchain: stable
 
-    - name: Extract version from Cargo.toml
+    - name: Extract and increment version from Cargo.toml
       id: version
       run: |
         VERSION=$(grep '^version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        IFS='.' read -r major minor patch <<<"$VERSION"
+        patch=$((patch + 1))
+        NEW_VERSION="$major.$minor.$patch"
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        sed -i "s/^version = \"$VERSION\"/version = \"$NEW_VERSION\"/" Cargo.toml
+
+    - name: Commit and push updated Cargo.toml with new version
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add Cargo.toml
+        git commit -m "Bump version to ${{ env.NEW_VERSION }}"
+        git push origin main
+
+    - name: Tag the repository with the crate version and push
+      env:
+        GITHUB_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        git tag -a "v${{ env.NEW_VERSION }}" -m "Version ${{ env.NEW_VERSION }} release"
+        git remote set-url origin https://$GITHUB_PAT@github.com/Open-Payments/messages-api.git
+        git push origin "v${{ env.NEW_VERSION }}"
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
@@ -32,52 +52,47 @@ jobs:
 
     - name: Build Docker image with version tag and latest tag
       run: |
-        docker build -t harishankarn/payment-messages-api:${{ env.VERSION }} .
-        docker tag harishankarn/payment-messages-api:${{ env.VERSION }} harishankarn/payment-messages-api:latest
+        docker build -t harishankarn/payment-messages-api:${{ env.NEW_VERSION }} .
+        docker tag harishankarn/payment-messages-api:${{ env.NEW_VERSION }} harishankarn/payment-messages-api:latest
 
     - name: Push both versioned and latest Docker image tags to Docker Hub
       run: |
-        docker push harishankarn/payment-messages-api:${{ env.VERSION }}
+        docker push harishankarn/payment-messages-api:${{ env.NEW_VERSION }}
         docker push harishankarn/payment-messages-api:latest
 
-    # GCP authentication and pushing to GCR
+    # Authenticate with GCP using google-github-actions/auth
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    # Setup Google Cloud SDK without passing service_account_key
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        version: 'latest'
 
-    - name: Authenticate Docker with Google Container Registry
+    # Authenticate Docker with Google Container Registry via gcloud
+    - name: Authenticate Docker to GCR
       run: |
-        echo "${{ secrets.GCP_SA_KEY }}" | docker login -u _json_key --password-stdin https://gcr.io
+        gcloud auth configure-docker gcr.io
 
     - name: Tag Docker image for GCR
       run: |
-        docker tag harishankarn/payment-messages-api:${{ env.VERSION }} gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.VERSION }}
+        docker tag harishankarn/payment-messages-api:${{ env.NEW_VERSION }} gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.NEW_VERSION }}
         docker tag harishankarn/payment-messages-api:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:latest
 
     - name: Push Docker image to GCR
       run: |
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.VERSION }}
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.NEW_VERSION }}
         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:latest
 
+    # Optional: Deploy to Cloud Run
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy payment-messages-api \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.VERSION }} \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.NEW_VERSION }} \
           --platform managed \
-          --region asia-south1-a \
+          --region us-central1 \
           --allow-unauthenticated
-
-    - name: Configure Git for GitHub Actions
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-
-    - name: Tag the repository with the crate version and push
-      env:
-        GITHUB_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        git tag -a "v${{ env.VERSION }}" -m "Version ${{ env.VERSION }} release"
-        git remote set-url origin https://$GITHUB_PAT@github.com/Open-Payments/messages-api.git
-        git push origin "v${{ env.VERSION }}"
