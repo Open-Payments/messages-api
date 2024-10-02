@@ -15,6 +15,6 @@ FROM debian:bullseye-slim
 
 WORKDIR /usr/local/bin
 
-COPY --from=builder /app/target/release/validator-service .
+COPY --from=builder /app/target/release/messages-api .
 
-CMD ["./validator-service"]
+CMD ["./messages-api"]
