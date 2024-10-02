@@ -1,4 +1,4 @@
-name: Build, Publish Docker Image, and Tag Version
+name: Build, Publish Docker Image to Docker Hub and GCP, and Tag Version
 
 on:
   push:
@@ -35,10 +35,39 @@ jobs:
         docker build -t harishankarn/payment-messages-api:${{ env.VERSION }} .
         docker tag harishankarn/payment-messages-api:${{ env.VERSION }} harishankarn/payment-messages-api:latest
 
-    - name: Push both versioned and latest Docker image tags
+    - name: Push both versioned and latest Docker image tags to Docker Hub
       run: |
         docker push harishankarn/payment-messages-api:${{ env.VERSION }}
         docker push harishankarn/payment-messages-api:latest
+
+    # GCP authentication and pushing to GCR
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Authenticate Docker with Google Container Registry
+      run: |
+        echo "${{ secrets.GCP_SA_KEY }}" | docker login -u _json_key --password-stdin https://gcr.io
+
+    - name: Tag Docker image for GCR
+      run: |
+        docker tag harishankarn/payment-messages-api:${{ env.VERSION }} gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.VERSION }}
+        docker tag harishankarn/payment-messages-api:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:latest
+
+    - name: Push Docker image to GCR
+      run: |
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.VERSION }}
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:latest
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy payment-messages-api \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/payment-messages-api:${{ env.VERSION }} \
+          --platform managed \
+          --region asia-south1-a \
+          --allow-unauthenticated
 
     - name: Configure Git for GitHub Actions
       run: |
