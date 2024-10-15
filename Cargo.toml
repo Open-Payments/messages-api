@@ -4,10 +4,9 @@ version = "0.1.15"
 edition = "2021"
 
 [dependencies]
-actix-web = "4.0"
+actix-web = "4.9"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.5"
 serde_valid = "0.25.0"
-utoipa = { version = "4.0", features = ["actix_extras"] }
-open-payments-iso20022 = { version = "0.2.1", features = ["payments"] }
-open-payments-fednow = "0.2.1"
+open-payments-iso20022 = { version = "0.2.8", features = ["payments"] }
+open-payments-fednow = "0.2.8"
