@@ -1,5 +1,9 @@
 
-# Open Payments - Validate API
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Open-Payments/.github/refs/heads/main/profile/logo-white.png" />
+</p>
+
+# Messages API
 
 The **Messages API** is part of the Open Payments initiative, designed to parse and validate financial payment messages. This API supports the FedNow ISO20022 format, applying validation rules from the official XSD schema files. The API is available for both public and private use, with a ready-to-deploy Docker image available on Docker Hub.
 
