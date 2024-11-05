@@ -24,41 +24,31 @@ pub async fn validate_message(
             match message_type.as_str() {
                 "fednow" => handle_fednow(&body),
                 "iso20022" => handle_iso20022(&body),
-                _ => ValidationResponse {
-                    is_valid: false,
-                    parsed_data: None,
-                    errors: vec![format!("Unsupported or missing message type: {}", message_type)],
-                },
+                _ => ValidationResponse::Error(vec![
+                    format!("Unsupported or missing message type: {}", message_type)
+                ]),
             }
         })
         .expect("Thread spawn failed")
         .join()
-        .unwrap_or_else(|e| ValidationResponse {
-            is_valid: false,
-            parsed_data: None,
-            errors: vec![format!("Thread error: {:?}", e)],
-        });
+        .unwrap_or_else(|e| ValidationResponse::Error(
+            vec![format!("Thread error: {:?}", e)]
+        ));
 
-    if validation_result.is_valid {
-        HttpResponse::Ok().json(validation_result)
-    } else {
-        HttpResponse::BadRequest().json(validation_result)
+    match validation_result {
+        ValidationResponse::Success(data) => HttpResponse::Ok().json(data),
+        ValidationResponse::Error(errors) => HttpResponse::BadRequest().json(errors),
     }
 }
 
 fn handle_fednow(body: &str) -> ValidationResponse {
-    let parsed: Result<FednowMessage, _> = from_str(body);
-    match parsed {
-        Ok(message) => ValidationResponse {
-            is_valid: true,
-            parsed_data: Some(serde_json::to_value(message).unwrap()),
-            errors: vec![],
-        },
-        Err(e) => ValidationResponse {
-            is_valid: false,
-            parsed_data: None,
-            errors: vec![format!("FedNow parsing error: {}", e)],
-        },
+    match from_str::<FednowMessage>(body) {
+        Ok(message) => ValidationResponse::Success(
+            serde_json::to_value(message).unwrap()
+        ),
+        Err(e) => ValidationResponse::Error(
+            vec![format!("FedNow parsing error: {}", e)]
+        ),
     }
 }
 
@@ -67,22 +57,13 @@ fn handle_iso20022(body: &str) -> ValidationResponse {
     let event_reader = EventReader::new(reader);
     let mut deserializer = serde_xml_rs::Deserializer::new(event_reader);
     
-    let result: Result<ISO20022Message, serde_path_to_error::Error<serde_xml_rs::Error>> = 
-        serde_path_to_error::deserialize(&mut deserializer);
-
-    match result {
-        Ok(message) => ValidationResponse {
-            is_valid: true,
-            parsed_data: Some(serde_json::to_value(message).unwrap()),
-            errors: vec![],
-        },
-        Err(e) => ValidationResponse {
-            is_valid: false,
-            parsed_data: None,
-            errors: vec![
-                format!("ISO20022 parsing error at path: {}", e.path()),
-                format!("Error details: {}", e),
-            ],
-        },
+    match serde_path_to_error::deserialize::<_, ISO20022Message>(&mut deserializer) {
+        Ok(message) => ValidationResponse::Success(
+            serde_json::to_value(message).unwrap()
+        ),
+        Err(e) => ValidationResponse::Error(vec![
+            format!("ISO20022 parsing error at path: {}", e.path()),
+            format!("Error details: {}", e),
+        ]),
     }
 }

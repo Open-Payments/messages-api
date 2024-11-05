@@ -1,0 +1,76 @@
+* {
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Ant Design dark mode overrides */
+.dark .ant-card {
+  background-color: #1f1f1f;
+}
+
+.dark .ant-select-dropdown {
+  background-color: #1f1f1f;
+}
+
+.dark .ant-layout {
+  background-color: #141414;
+}
+
+.dark .ant-layout-sider {
+  background-color: #141414;
+}
+
+.dark .ant-input,
+.dark .ant-input-textarea {
+  background-color: #1f1f1f;
+}
+
+.dark .ant-select-selector {
+  background-color: #1f1f1f !important;
+}
+
+.dark .ant-card-bordered {
+  border-color: #303030;
+}
+
+/* Fix for Select dropdown */
+.ant-select-dropdown {
+  z-index: 1050 !important;
+}
+
+/* Ensure proper stacking context */
+.ant-layout {
+  position: relative;
+  z-index: 0;
+}
+
+.ant-layout-sider {
+  z-index: 1000;
+}
+
+.ant-layout-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure proper scrolling behavior */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Fix for Select dropdown positioning */
+.ant-select-dropdown {
+  position: fixed;
+}
+
+/* Smooth transitions */
+.ant-layout {
+  transition: all 0.2s;
+}
+
+/* Ensure content area scrolls properly */
+.ant-layout-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

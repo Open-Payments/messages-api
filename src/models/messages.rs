@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 use open_payments_iso20022::document::Document;
 
 #[derive(Serialize)]
-pub struct ValidationResponse {
-    pub is_valid: bool,
-    pub parsed_data: Option<serde_json::Value>,
-    pub errors: Vec<String>,
+#[serde(untagged)]  // This makes the JSON output cleaner without the enum variant name
+pub enum ValidationResponse {
+    Success(serde_json::Value),
+    Error(Vec<String>),
 }
 
 #[derive(Serialize, Deserialize)]

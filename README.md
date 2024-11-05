@@ -22,7 +22,7 @@ This endpoint accepts an XML payment message with a message type header and perf
 1. **Message Type Detection**: Uses the Message-Type header to determine the appropriate parser
 2. **Parsing**: Converts the XML payment message into an internal object model
 3. **Validation**: Applies schema-based validation for the specified message type
-4. **Response**: Returns validation status and the parsed message as JSON if valid
+4. **Response**: Returns either the parsed message as JSON if valid, or an array of error messages if invalid
 
 ---
 
@@ -52,38 +52,32 @@ curl -X POST http://localhost:8080/validate \
 
 - **Content-Type**: `application/json`
 - **Status Codes**:
-  - `200 OK`: Message is valid
+  - `200 OK`: Message is valid and parsed successfully
   - `400 Bad Request`: Validation or parsing errors
-- **Body**: Validation result with parsed data if successful
+- **Body**: 
+  - Success: The parsed message as JSON
+  - Error: Array of error messages
 
 ##### Example Successful Response:
 ```json
 {
-  "is_valid": true,
-  "parsed_data": {
-    "Document": {
-      "CstmrCdtTrfInitn": {
-        "GrpHdr": {
-          "MsgId": "ABC123456",
-          "CreDtTm": "2024-10-01T12:00:00Z"
-        }
+  "Document": {
+    "CstmrCdtTrfInitn": {
+      "GrpHdr": {
+        "MsgId": "ABC123456",
+        "CreDtTm": "2024-10-01T12:00:00Z"
       }
     }
-  },
-  "errors": []
+  }
 }
 ```
 
-##### Example Validation Error Response:
+##### Example Error Response:
 ```json
-{
-  "is_valid": false,
-  "parsed_data": null,
-  "errors": [
-    "ISO20022 parsing error at path: Document.CstmrCdtTrfInitn.GrpHdr.MsgId",
-    "Error details: required field `MsgId` missing"
-  ]
-}
+[
+  "ISO20022 parsing error at path: Document.CstmrCdtTrfInitn.GrpHdr.MsgId",
+  "Error details: required field `MsgId` missing"
+]
 ```
 
 ---
@@ -109,8 +103,7 @@ This will start the API on port `8080` of your local machine.
 #### **Features:**
 
 - **Multiple Format Support**: Supports both FedNow and ISO20022 message formats
-- **Detailed Error Reporting**: Provides specific error locations and messages for invalid content
-- **JSON Conversion**: Automatically converts valid XML messages to JSON format
+- **Clean Response Format**: Direct JSON output for successful parsing, clear error messages for failures
 - **Thread Safety**: Handles parsing in separate threads to maintain responsiveness
 - **Efficient Processing**: Optimized for handling large XML messages with minimal memory usage
 
@@ -156,5 +149,31 @@ To build and run the project locally:
    ```
 
 The server will start on `http://0.0.0.0:8080`
+
+For development builds, the project uses optimized compilation settings to reduce build times while maintaining debugging capabilities.
+
+---
+
+### Error Handling
+
+The API provides clear and specific error messages in the following scenarios:
+
+1. **Invalid Message Type**:
+   ```json
+   ["Unsupported or missing message type: <type>"]
+   ```
+
+2. **XML Parsing Errors**:
+   ```json
+   ["FedNow parsing error: invalid element at line 5"]
+   ```
+
+3. **Schema Validation Errors**:
+   ```json
+   [
+     "ISO20022 parsing error at path: Document.CstmrCdtTrfInitn.GrpHdr.MsgId",
+     "Error details: required field missing"
+   ]
+   ```
 
 ---
