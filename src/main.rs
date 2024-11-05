@@ -1,35 +1,33 @@
-use actix_web::{web, App, HttpServer, HttpResponse, Responder};
-use open_payments_fednow::FednowMessage;
-use serde_xml_rs::from_str;
-use std::thread;
+use actix_web::{web, App, HttpServer, Responder, HttpResponse};
+use actix_files::Files;
+use messages_api::validate_message;
 
-async fn validate_message(body: String) -> impl Responder {
-    let result = thread::Builder::new()
-        .stack_size(16 * 1024 * 1024) // Set stack size to 16 MB
-        .spawn(move || {
-            let parsed: Result<FednowMessage, _> = from_str(&body);
-            parsed
-        })
-        .expect("Thread spawn failed")
-        .join();
-
-    match result {
-        // If parsing is successful, perform additional validation
-        Ok(Ok(message)) => {
-            // Return the message as the response
-            HttpResponse::Ok().json(message)  // Parsing and validation successful
-        },
-        Ok(Err(e)) => HttpResponse::BadRequest().body(format!("Invalid XML: {}", e)), // XML parsing failed
-        Err(e) => HttpResponse::InternalServerError().body(format!("Thread error: {:?}", e)), // Threading error
-    }
+// Handler for the root path - serves our index.html
+async fn index() -> impl Responder {
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(include_str!("../static/index.html"))
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("Starting server at http://0.0.0.0:8080");
+    
     HttpServer::new(move || {
         App::new()
-            // POST route to validate XML message
-            .route("/validate", web::post().to(validate_message))
+            .service(web::resource("/").to(index))
+            .service(web::resource("/validate").to(validate_message))
+            .service(
+                Files::new("/", "./static")  // Changed this line to serve from root
+                    .show_files_listing()
+                    .index_file("index.html")
+            )
+            .wrap(actix_web::middleware::Logger::default())
+            .wrap(actix_web::middleware::Compress::default())
+            .wrap(actix_web::middleware::DefaultHeaders::new()
+                .add(("Access-Control-Allow-Origin", "*"))
+                .add(("Access-Control-Allow-Methods", "POST, GET, OPTIONS"))
+                .add(("Access-Control-Allow-Headers", "Content-Type, Message-Type")))
     })
     .bind("0.0.0.0:8080")?
     .run()
