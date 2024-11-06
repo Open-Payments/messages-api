@@ -18,7 +18,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/").to(index))
             .service(web::resource("/validate").to(validate_message))
             .service(
-                Files::new("/", "./static")  // Changed this line to serve from root
+                Files::new("/", "static")  // Changed this line to serve from root
                     .show_files_listing()
                     .index_file("index.html")
             )
