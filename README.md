@@ -6,6 +6,7 @@
 
 The **Messages API** is part of the Open Payments initiative, designed to parse and validate financial payment messages. This API supports both FedNow and ISO20022 message formats, applying validation rules from their respective schemas. The API is available for both public and private use, with a ready-to-deploy Docker image available on Docker Hub.
 
+- **API Portal**: [Messages API -Demo](https://portal.openpayments.tech)
 - **Repository**: [Open Payments Messages API](https://github.com/Open-Payments/messages-api)
 - **Docker Hub**: [Payment Messages API Docker Image](https://hub.docker.com/r/harishankarn/payment-messages-api)
 - **API Documentation**: [Postman Collection](https://www.postman.com/openpaymentsapi/open-payments/overview)
