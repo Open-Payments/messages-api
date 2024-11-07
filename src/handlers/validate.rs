@@ -25,7 +25,7 @@ pub async fn validate_message(
                 "fednow" => handle_fednow(&body),
                 "iso20022" => handle_iso20022(&body),
                 _ => ValidationResponse::Error(vec![
-                    format!("Unsupported or missing message type: {}", message_type)
+                    format!("Unsupported or missing message type: {:?}", message_type)
                 ]),
             }
         })
@@ -47,7 +47,7 @@ fn handle_fednow(body: &str) -> ValidationResponse {
             serde_json::to_value(message).unwrap()
         ),
         Err(e) => ValidationResponse::Error(
-            vec![format!("FedNow parsing error: {}", e)]
+            vec![format!("FedNow parsing error: {:?}", e)]
         ),
     }
 }
@@ -57,13 +57,31 @@ fn handle_iso20022(body: &str) -> ValidationResponse {
     let event_reader = EventReader::new(reader);
     let mut deserializer = serde_xml_rs::Deserializer::new(event_reader);
     
+    // First, attempt to parse the message
     match serde_path_to_error::deserialize::<_, ISO20022Message>(&mut deserializer) {
-        Ok(message) => ValidationResponse::Success(
-            serde_json::to_value(message).unwrap()
-        ),
-        Err(e) => ValidationResponse::Error(vec![
-            format!("ISO20022 parsing error at path: {}", e.path()),
-            format!("Error details: {}", e),
-        ]),
+        Ok(message) => {
+            // If parsing succeeds, perform schema validation
+            match message.validate() {
+                Ok(()) => {
+                    // Both parsing and validation succeeded
+                    ValidationResponse::Success(
+                        serde_json::to_value(message).unwrap()
+                    )
+                }
+                Err(validation_error) => {
+                    // Schema validation failed
+                    ValidationResponse::Error(vec![
+                        format!("Schema validation error: {:?}", validation_error)
+                    ])
+                }
+            }
+        }
+        Err(e) => {
+            // Parsing failed
+            ValidationResponse::Error(vec![
+                format!("ISO20022 parsing error at path: {:?}", e.path()),
+                format!("Error details: {:?}", e),
+            ])
+        }
     }
 }
