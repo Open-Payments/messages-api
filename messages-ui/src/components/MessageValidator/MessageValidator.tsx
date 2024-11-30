@@ -13,9 +13,6 @@ const { Title } = Typography;
 interface MessageValidatorProps {
   messageType: string;
 }
-interface ValidationError {
-  message: string;
-}
 interface ParsedResponse {
   content: string;
   validations: Array<{
