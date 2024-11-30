@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import Editor from '@monaco-editor/react';
-import EditorContainer from '../Layout/common/EditorContainer'
+import EditorContainer from '../Layout/common/EditorContainer';
 
 interface EditorPanelProps {
   onValidate: () => void;
@@ -15,7 +15,7 @@ const EditorPanel = ({
   onLoadSample,
   sampleMessage,
   isValidating,
-  handleEditorDidMount
+  handleEditorDidMount,
 }: EditorPanelProps) => (
   <EditorContainer
     actions={

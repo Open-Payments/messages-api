@@ -1,8 +1,8 @@
-import React from "react";
-import MessageValidator from "../MessageValidator/MessageValidator";
+import React from 'react';
+import MessageValidator from '../MessageValidator/MessageValidator';
 
 const FedNowValidator = () => {
-	return <MessageValidator messageType="fednow" />;
+  return <MessageValidator messageType="fednow" />;
 };
 
 export default FedNowValidator;

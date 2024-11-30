@@ -7,7 +7,7 @@ interface AppLayoutProps {
   isDarkMode: boolean;
   onThemeChange: () => void;
 }
-const AppLayout = ({ isDarkMode, onThemeChange }:AppLayoutProps) => {
+const AppLayout = ({ isDarkMode, onThemeChange }: AppLayoutProps) => {
   return (
     <Layout hasSider>
       <Sidebar isDarkMode={isDarkMode} onThemeChange={onThemeChange} />

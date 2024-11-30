@@ -1,4 +1,3 @@
-
 import { Alert, Divider, Typography } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { theme } from 'antd';
@@ -11,18 +10,20 @@ interface ResultsPanelProps {
   parsedResponse: any;
 }
 
- const ResultsPanel = ({ success, errors, parsedResponse }: ResultsPanelProps) => {
+const ResultsPanel = ({ success, errors, parsedResponse }: ResultsPanelProps) => {
   const { token } = theme.useToken();
-  
+
   if (!success && errors.length === 0) {
     return (
-      <div style={{
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: token.colorTextSecondary,
-      }}>
+      <div
+        style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: token.colorTextSecondary,
+        }}
+      >
         Validation results will appear here
       </div>
     );
@@ -40,13 +41,7 @@ interface ResultsPanelProps {
         />
       )}
       {errors.map((error, index) => (
-        <Alert
-          key={index}
-          message={error}
-          type="error"
-          showIcon
-          style={{ marginBottom: 16 }}
-        />
+        <Alert key={index} message={error} type="error" showIcon style={{ marginBottom: 16 }} />
       ))}
       {parsedResponse && (
         <>

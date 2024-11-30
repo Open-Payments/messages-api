@@ -1,1 +1,1 @@
-export { default } from "./RuleLogic";
+export { default } from './RuleLogic';
