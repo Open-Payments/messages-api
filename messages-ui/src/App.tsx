@@ -39,7 +39,7 @@ const App = () => {
           >
             <Route index element={<Home />} />
             <Route path="iso20022" element={<ISO20022Validator />} />
-            <Route path="fednow" element={<FedNowValidator />} />
+            <Route path="fednow" element={<FedNowValidator />} />        
           </Route>
         </Routes>
       </ConfigProvider>
