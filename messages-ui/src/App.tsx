@@ -6,7 +6,6 @@ import AppLayout from './components/Layout/AppLayout';
 import ISO20022Validator from './components/Validators/ISO20022Validator';
 import FedNowValidator from './components/Validators/FedNowValidator';
 import Home from './components/Home';
-import RuleLogic from './components/RuleLogicValidator';
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -41,7 +40,6 @@ const App = () => {
             <Route index element={<Home />} />
             <Route path="iso20022" element={<ISO20022Validator />} />
             <Route path="fednow" element={<FedNowValidator />} />
-            <Route path="rulelogic" element={<RuleLogic />} />
           </Route>
         </Routes>
       </ConfigProvider>
