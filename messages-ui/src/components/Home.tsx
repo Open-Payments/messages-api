@@ -1,3 +1,4 @@
+import React from 'react';
 import { Typography, Card } from 'antd';
 import { Link } from 'react-router-dom';
 

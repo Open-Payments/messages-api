@@ -3,8 +3,11 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 const { Content } = Layout;
-
-const AppLayout = ({ isDarkMode, onThemeChange }) => {
+interface AppLayoutProps {
+  isDarkMode: boolean;
+  onThemeChange: () => void;
+}
+const AppLayout = ({ isDarkMode, onThemeChange }:AppLayoutProps) => {
   return (
     <Layout hasSider>
       <Sidebar isDarkMode={isDarkMode} onThemeChange={onThemeChange} />
