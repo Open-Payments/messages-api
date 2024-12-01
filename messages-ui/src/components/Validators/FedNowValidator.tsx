@@ -1,3 +1,4 @@
+import React from 'react';
 import MessageValidator from '../MessageValidator/MessageValidator';
 
 const FedNowValidator = () => {

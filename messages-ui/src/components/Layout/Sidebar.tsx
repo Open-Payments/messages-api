@@ -7,12 +7,19 @@ import {
   LinkOutlined,
   HomeOutlined,
   BulbOutlined,
-  BulbFilled
+  BulbFilled,
+  ControlOutlined,
 } from '@ant-design/icons';
 
+interface SiderBarProps {
+  isDarkMode: boolean;
+  onThemeChange: () => void;
+}
 const { Sider } = Layout;
 
-const items = [
+import type { MenuProps } from 'antd';
+
+const items: MenuProps['items'] = [
   {
     key: 'home',
     icon: <HomeOutlined />,
@@ -45,18 +52,26 @@ const items = [
       {
         key: 'docs',
         icon: <LinkOutlined />,
-        label: <a href="http://openpayments.tech" target="_blank" rel="noopener noreferrer">API Documentation</a>,
+        label: (
+          <a href="http://openpayments.tech" target="_blank" rel="noopener noreferrer">
+            API Documentation
+          </a>
+        ),
       },
       {
         key: 'github',
         icon: <GithubOutlined />,
-        label: <a href="https://github.com/Open-Payments" target="_blank" rel="noopener noreferrer">Repository</a>,
+        label: (
+          <a href="https://github.com/Open-Payments" target="_blank" rel="noopener noreferrer">
+            Repository
+          </a>
+        ),
       },
     ],
   },
 ];
 
-const Sidebar = ({ isDarkMode, onThemeChange }) => {
+const Sidebar = ({ isDarkMode, onThemeChange }: SiderBarProps) => {
   const location = useLocation();
   const selectedKey = location.pathname.split('/')[1] || 'home';
   const { token } = theme.useToken();
@@ -73,48 +88,65 @@ const Sidebar = ({ isDarkMode, onThemeChange }) => {
       }}
       theme={isDarkMode ? 'dark' : 'light'}
     >
-      <div style={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: token.colorBgContainer,
-      }}>
-        <div style={{
-          height: 64,
-          padding: '16px 24px',
+      <div
+        style={{
+          height: '100vh',
           display: 'flex',
-          alignItems: 'center',
-          borderBottom: `1px solid ${token.colorBorder}`,
+          flexDirection: 'column',
           backgroundColor: token.colorBgContainer,
-        }}>
-          <Link to="/" style={{
+        }}
+      >
+        <div
+          style={{
+            height: 64,
+            padding: '16px 24px',
             display: 'flex',
             alignItems: 'center',
-            textDecoration: 'none',
-          }}>
-            <img src="/profile-pic.png" alt="Open Payments" style={{
-              height: 32,
-              marginRight: 12,
-            }} />
-            <span style={{
-              fontSize: 18,
-              fontWeight: 600,
-              color: token.colorText,
-            }}>Open Payments</span>
+            borderBottom: `1px solid ${token.colorBorder}`,
+            backgroundColor: token.colorBgContainer,
+          }}
+        >
+          <Link
+            to="/"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+            }}
+          >
+            <img
+              src="/profile-pic.png"
+              alt="Open Payments"
+              style={{
+                height: 32,
+                marginRight: 12,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 18,
+                fontWeight: 600,
+                color: token.colorText,
+              }}
+            >
+              Open Payments
+            </span>
           </Link>
         </div>
 
-        <div style={{
-          flex: 1,
-          overflow: 'auto',
-          backgroundColor: token.colorBgContainer,
-        }}>
+        <div
+          style={{
+            flex: 1,
+            overflow: 'auto',
+            backgroundColor: token.colorBgContainer,
+          }}
+        >
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
             defaultOpenKeys={['validators']}
             items={items}
-            style={{ 
+            style={{
               borderRight: 0,
               backgroundColor: token.colorBgContainer,
             }}
@@ -122,11 +154,13 @@ const Sidebar = ({ isDarkMode, onThemeChange }) => {
           />
         </div>
 
-        <div style={{
-          padding: '16px',
-          borderTop: `1px solid ${token.colorBorder}`,
-          backgroundColor: token.colorBgContainer,
-        }}>
+        <div
+          style={{
+            padding: '16px',
+            borderTop: `1px solid ${token.colorBorder}`,
+            backgroundColor: token.colorBgContainer,
+          }}
+        >
           <Button
             type="text"
             icon={isDarkMode ? <BulbFilled /> : <BulbOutlined />}

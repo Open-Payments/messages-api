@@ -1,3 +1,4 @@
+import React from 'react';
 import { ConfigProvider, theme as antTheme } from 'antd';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -9,7 +10,9 @@ import Home from './components/Home';
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
-    return savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return savedTheme
+      ? savedTheme === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
@@ -28,10 +31,15 @@ const App = () => {
         }}
       >
         <Routes>
-          <Route path="/" element={<AppLayout isDarkMode={isDarkMode} onThemeChange={() => setIsDarkMode(!isDarkMode)} />}>
+          <Route
+            path="/"
+            element={
+              <AppLayout isDarkMode={isDarkMode} onThemeChange={() => setIsDarkMode(!isDarkMode)} />
+            }
+          >
             <Route index element={<Home />} />
             <Route path="iso20022" element={<ISO20022Validator />} />
-            <Route path="fednow" element={<FedNowValidator />} />
+            <Route path="fednow" element={<FedNowValidator />} />        
           </Route>
         </Routes>
       </ConfigProvider>
