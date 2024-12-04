@@ -5,12 +5,13 @@ import { theme } from 'antd';
 const { Text } = Typography;
 
 interface ResultsPanelProps {
+  title: string;
   success: string | null;
   errors: string[];
   parsedResponse: any;
 }
 
-const ResultsPanel = ({ success, errors, parsedResponse }: ResultsPanelProps) => {
+const ResultsPanel = ({ title, success, errors, parsedResponse }: ResultsPanelProps) => {
   const { token } = theme.useToken();
 
   if (!success && errors.length === 0) {
@@ -46,7 +47,7 @@ const ResultsPanel = ({ success, errors, parsedResponse }: ResultsPanelProps) =>
       {parsedResponse !== null  && (
         <>
           <Divider>
-            <Text type="secondary">Parsed Message</Text>
+            <Text type="secondary">{title}</Text>
           </Divider>
           <pre
             style={{

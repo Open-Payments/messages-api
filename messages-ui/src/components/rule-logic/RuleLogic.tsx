@@ -51,7 +51,7 @@ function RuleLogic() {
     dataEditorRef.current = editor;
   };
 
-  const validateLogic = async () => {
+  const applyLogic = async () => {
     if (!rulesEditorRef.current || !dataEditorRef.current) return;
 
     setIsValidating(true);
@@ -73,7 +73,7 @@ function RuleLogic() {
         setErrors(responseData.errors || ['Server error occurred']);
         return;
       }
-      setSuccess('Rule Validation successful');
+      setSuccess('Logic Validation successful');
       setParsedResponse(responseData);
     } catch (error: any) {
       setErrors([error.message]);
@@ -93,7 +93,7 @@ function RuleLogic() {
     <PageContainer
       title={
         <Title level={3} style={{ margin: '8px 0' }}>
-          Rule-Logic
+          Logic Engine
         </Title>
       }
     >
@@ -102,13 +102,13 @@ function RuleLogic() {
           <Col span={12}>
             <Row gutter={[0, 16]}>
               <Col span={24}>
-                <Title level={4}>Rules</Title>
+                <Title level={4}>Logic</Title>
                 <EditorPanel
                   buttons={[
                     {
                       type: 'primary',
-                      label: 'Validate',
-                      onClick: validateLogic,
+                      label: 'Apply',
+                      onClick: applyLogic,
                       loading: isValidating,
                     },
                     {
@@ -133,7 +133,7 @@ function RuleLogic() {
             </Row>
           </Col>
           <Col span={12}>
-            <ResultsPanel success={success} errors={errors} parsedResponse={parsedResponse} />
+            <ResultsPanel title='Result' success={success} errors={errors} parsedResponse={parsedResponse} />
           </Col>
         </Row>
       </ContentCard>

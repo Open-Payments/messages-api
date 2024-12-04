@@ -1,18 +1,11 @@
-use actix_web::{
-    web::{self},
-    HttpRequest, HttpResponse, Responder,
-};
-use datalogic_rs::JsonLogic;
+use actix_web::{HttpRequest, HttpResponse, Responder};
 use open_payments_fednow::FednowMessage;
 use serde_xml_rs::from_str;
 use std::io::BufReader;
 use std::thread;
 use xml::reader::EventReader;
 
-use crate::{
-    models::messages::{ISO20022Message, ValidationResponse},
-    LogicRequest,
-};
+use crate::models::messages::{ISO20022Message, ValidationResponse};
 
 pub async fn validate_message(req: HttpRequest, body: String) -> impl Responder {
     let message_type = req
@@ -31,25 +24,6 @@ pub async fn validate_message(req: HttpRequest, body: String) -> impl Responder 
                 "Unsupported or missing message type: {:?}",
                 message_type
             )]),
-        })
-        .expect("Thread spawn failed")
-        .join()
-        .unwrap_or_else(|e| ValidationResponse::Error(vec![format!("Thread error: {:?}", e)]));
-
-    match validation_result {
-        ValidationResponse::Success(data) => HttpResponse::Ok().json(data),
-        ValidationResponse::Error(errors) => HttpResponse::BadRequest().json(errors),
-    }
-}
-
-pub async fn apply_logic(payload: web::Json<LogicRequest>) -> impl Responder {
-    let logic = JsonLogic::new();
-
-    let validation_result = thread::Builder::new()
-        .stack_size(16 * 1024 * 1024)
-        .spawn(move || match logic.apply(&payload.rules, &payload.data) {
-            Ok(result) => ValidationResponse::Success(result),
-            Err(e) => ValidationResponse::Error(vec![format!("Logic evaluation error: {}", e)]),
         })
         .expect("Thread spawn failed")
         .join()

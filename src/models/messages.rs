@@ -2,8 +2,9 @@ use open_payments_common::ValidationError;
 use open_payments_iso20022::document::Document;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+
 #[derive(Serialize)]
-#[serde(untagged)] // This makes the JSON output cleaner without the enum variant name
+#[serde(untagged)]
 pub enum ValidationResponse {
     Success(serde_json::Value),
     Error(Vec<String>),
@@ -23,14 +24,14 @@ impl ISO20022Message {
     }
 }
 #[derive(Deserialize)]
-pub struct LogicRequest {
+pub struct LogicEngineRequest {
     pub rules: Value,
     pub data: Value,
 }
 
 #[derive(Serialize)]
-pub struct LogicResponse {
-    pub result: Value,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
+#[serde(untagged)]
+pub enum LogicEngineResponse {
+    Success(serde_json::Value),
+    Error(Vec<String>),
 }

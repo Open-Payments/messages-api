@@ -44,7 +44,7 @@ const items: MenuProps['items'] = [
   },
   {
     key: 'Rule-Logic',
-    label: <Link to="/rulelogic">Rule-Logic</Link>,
+    label: <Link to="/rulelogic">Logic Engine</Link>,
     icon: <ControlOutlined />,
   },
   {

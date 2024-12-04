@@ -1,6 +1,6 @@
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use messages_api::{handlers::validate::apply_logic, validate_message};
+use messages_api::{apply_logic, validate_message};
 
 // Handler for the root path - serves our index.html
 async fn index() -> impl Responder {

@@ -150,7 +150,7 @@ const MessageValidator = ({ messageType }: MessageValidatorProps) => {
             />
           </Col>
           <Col span={12}>
-            <ResultsPanel success={success} errors={errors} parsedResponse={parsedResponse} />
+            <ResultsPanel title='Parsed Message' success={success} errors={errors} parsedResponse={parsedResponse} />
           </Col>
         </Row>
       </ContentCard>
