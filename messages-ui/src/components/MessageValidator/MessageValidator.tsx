@@ -8,6 +8,7 @@ import PageContainer from '../Layout/common/PageContainer';
 import ContentCard from '../Layout/common/ContentCard';
 import EditorPanel from '../../components/common/EditorPanel';
 import ResultsPanel from '../common/ResultsPanel';
+import { DEFAULT_MONACO_CONFIG, MonacoConfig } from '../../config/monacoConfig';
 const { Title } = Typography;
 
 interface MessageValidatorProps {
@@ -27,6 +28,11 @@ interface XMLLanguageConfig {
   tokenizer: {
     root: Array<[RegExp, string]>;
   };
+}
+const MessageEditorConfig : MonacoConfig={
+  editor:{
+    ...DEFAULT_MONACO_CONFIG.editor
+  }
 }
 const MessageValidator = ({ messageType }: MessageValidatorProps) => {
   const { token } = theme.useToken();
@@ -62,7 +68,11 @@ const MessageValidator = ({ messageType }: MessageValidatorProps) => {
       monaco.languages.setMonarchTokensProvider('xml', monarchRules);
     }
   };
-
+  const handleLoadSample = () => {
+    if (editorRef.current) {
+      editorRef.current.setValue(sampleMessage);
+    }
+  };
   const validateMessage = async () => {
     if (!editorRef.current) return;
     const xmlContent = editorRef.current.getValue();
@@ -120,11 +130,22 @@ const MessageValidator = ({ messageType }: MessageValidatorProps) => {
         <Row gutter={16}>
           <Col span={12}>
             <EditorPanel
-              onValidate={validateMessage}
-              onLoadSample={() => editorRef.current?.setValue(sampleMessage)}
+              buttons={[
+                {
+                  type: 'primary',
+                  label: 'Validate',
+                  onClick: validateMessage,
+                  loading: isValidating,
+                },
+                {
+                  type: 'default',
+                  label: 'Load Sample',
+                  onClick: handleLoadSample,
+                },
+              ]}
               sampleMessage={sampleMessage}
-              isValidating={isValidating}
               handleEditorDidMount={handleEditorDidMount}
+              monacoConfig={MessageEditorConfig}
             />
           </Col>
           <Col span={12}>

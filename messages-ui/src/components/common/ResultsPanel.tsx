@@ -43,7 +43,7 @@ const ResultsPanel = ({ success, errors, parsedResponse }: ResultsPanelProps) =>
       {errors.map((error, index) => (
         <Alert key={index} message={error} type="error" showIcon style={{ marginBottom: 16 }} />
       ))}
-      {parsedResponse && (
+      {parsedResponse !== null  && (
         <>
           <Divider>
             <Text type="secondary">Parsed Message</Text>
@@ -61,7 +61,7 @@ const ResultsPanel = ({ success, errors, parsedResponse }: ResultsPanelProps) =>
               borderRadius: token.borderRadius,
             }}
           >
-            {JSON.stringify(parsedResponse, null, 2)}
+          {JSON.stringify(parsedResponse, null, 2)}
           </pre>
         </>
       )}

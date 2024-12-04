@@ -1,49 +1,57 @@
-import { Button } from 'antd';
+import { Button, ButtonProps } from 'antd';
 import Editor from '@monaco-editor/react';
 import EditorContainer from '../Layout/common/EditorContainer';
 import { theme } from 'antd';
 import { Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
+import { MonacoConfig } from '../../config/monacoConfig';
+
+interface ButtonConfig extends ButtonProps {
+  label: string;
+}
 interface EditorPanelProps {
-  onValidate: () => void;
-  onLoadSample: () => void;
+  buttons?: ButtonConfig[];
   sampleMessage: string;
-  isValidating: boolean;
   handleEditorDidMount: (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void;
+  monacoConfig: MonacoConfig;
 }
 
 const EditorPanel = ({
-  onValidate,
-  onLoadSample,
+  buttons = [],
   sampleMessage,
-  isValidating,
   handleEditorDidMount,
+  monacoConfig,
 }: EditorPanelProps) => {
   const { token } = theme.useToken();
+  const config = {
+    editor: {
+      ...monacoConfig.editor,
+      theme: token.colorBgContainer === '#ffffff' ? 'light' : 'vs-dark',
+    },
+  };
   return (
     <EditorContainer
       actions={
-        <>
-          <Button type="primary" onClick={onValidate} loading={isValidating}>
-            Validate
-          </Button>
-          <Button onClick={onLoadSample}>Load Sample</Button>
-        </>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {buttons.map((button, index) => (
+            <Button
+              key={index}
+              type={button.type}
+              onClick={button.onClick}
+              loading={button.loading}
+            >
+              {button.label}
+            </Button>
+          ))}
+        </div>
       }
     >
       <Editor
-        height="100%"
-        defaultLanguage="xml"
+        height={config.editor.height}
+        defaultLanguage={config.editor.defaultLanguage}
         defaultValue={sampleMessage}
-        theme={token.colorBgContainer === '#ffffff' ? 'light' : 'vs-dark'}
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          lineNumbers: 'on',
-          automaticLayout: true,
-          formatOnType: true,
-          formatOnPaste: true,
-        }}
+        theme={config.editor.theme}
+        options={config.editor.options}
         onMount={handleEditorDidMount}
       />
     </EditorContainer>

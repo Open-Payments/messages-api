@@ -25,4 +25,5 @@ open-payments-common = { version = "1.0.6" }
 open-payments-iso20022 = { version = "1.0.6", features = ["pacs", "pain", "head", "camt", "derive_serde"] }
 open-payments-fednow = { version = "1.0.6", features = ["derive_serde"] }
 samplify-rs = "0.1.5"
+datalogic-rs = "1.0.6"
 
