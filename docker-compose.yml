@@ -1,5 +1,5 @@
 services:
-  validator-service:
+  messages-api:
     image: harishankarn/payment-messages-api
     build: .
     container_name: messages-api

@@ -7,7 +7,7 @@ interface EditorContainerProps {
   actions?: ReactNode;
 }
 
-const EditorContainer = ({ children, height = 600, actions }: EditorContainerProps) => (
+const EditorContainer = ({ children, height = 300, actions }: EditorContainerProps) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     {actions && (
       <div
