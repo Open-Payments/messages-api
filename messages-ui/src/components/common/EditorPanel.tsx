@@ -14,6 +14,7 @@ interface EditorPanelProps {
   sampleMessage: string;
   handleEditorDidMount: (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void;
   monacoConfig: MonacoConfig;
+  height?:number;
 }
 
 const EditorPanel = ({
@@ -21,6 +22,7 @@ const EditorPanel = ({
   sampleMessage,
   handleEditorDidMount,
   monacoConfig,
+  height
 }: EditorPanelProps) => {
   const { token } = theme.useToken();
   const config = {
@@ -31,6 +33,7 @@ const EditorPanel = ({
   };
   return (
     <EditorContainer
+    height={height}
       actions={
         <div style={{ display: 'flex', gap: 8 }}>
           {buttons.map((button, index) => (

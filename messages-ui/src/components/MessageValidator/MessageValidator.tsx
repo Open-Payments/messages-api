@@ -146,6 +146,7 @@ const MessageValidator = ({ messageType }: MessageValidatorProps) => {
               sampleMessage={sampleMessage}
               handleEditorDidMount={handleEditorDidMount}
               monacoConfig={MessageEditorConfig}
+              height={600}
             />
           </Col>
           <Col span={12}>
